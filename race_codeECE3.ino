@@ -4,8 +4,8 @@
 
 uint16_t sensorValues[8]; // right -> left, 0 -> 7
 
-const int minimums[] = {711, 687, 711, 619, 596, 687, 596, 619};
-const int maximums[] = {1789, 1813, 1789, 1881, 1904, 1812, 1904, 1881};
+uint16_t minimums[] = {711, 687, 711, 619, 596, 687, 596, 619};
+const uint16_t maximums[] = {1789, 1813, 1789, 1881, 1904, 1812, 1904, 1881};
 const int weights[] = {8, 4, 2, 1, -1, -2, -4, -8};
 
 const int left_nslp_pin=31; // nslp ==> awake & ready for PWM
@@ -34,7 +34,10 @@ void setup() {
   pinMode(left_pwm_pin,OUTPUT);
 
   digitalWrite(left_dir_pin,LOW);
-  digitalWrite(left_nslp_pin,HIGH);
+  digitalWrite(left_nslp_pin,LOW);
+
+  digitalWrite(right_dir_pin,LOW);
+  digitalWrite(right_nslp_pin,LOW);
 
   pinMode(LED_RF, OUTPUT);
   
@@ -47,14 +50,15 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly: 
-  int leftSpd = 70;
-  
+
   ECE3_read_IR(sensorValues);
+  // put your main code here, to run repeatedly: 
+  // int leftSpd = 70;
+  
 
-  analogWrite(left_pwm_pin,leftSpd);
+  // analogWrite(left_pwm_pin,leftSpd);
 
-  float wavg = 0;
+  // float wavg = 0;
 
   // right to left
   for (int i = 0; i < 8; i++){
@@ -62,7 +66,7 @@ void loop() {
       minimums[i] = sensorValues[i];
 
     float ratio = (((sensorValues[i] - minimums[i]) * 1000 * weights[i]) / (maximums[i] - minimums[i]));
-    Serial.print(ratio);
+    Serial.println(sensorValues[i]);
   }
 
   digitalWrite(LED_RF, HIGH);
