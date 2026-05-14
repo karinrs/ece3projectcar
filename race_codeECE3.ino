@@ -41,7 +41,7 @@ void setup() {
 
   pinMode(LED_RF, OUTPUT);
   
-//  ECE3_Init();
+  ECE3_Init();
 
 // set the data rate in bits/second for serial data transmission
   Serial.begin(9600); 
@@ -53,21 +53,22 @@ void loop() {
 
   ECE3_read_IR(sensorValues);
   // put your main code here, to run repeatedly: 
-  // int leftSpd = 70;
+  int leftSpd = 70;
   
 
-  // analogWrite(left_pwm_pin,leftSpd);
+  analogWrite(left_pwm_pin,leftSpd);
 
-  // float wavg = 0;
+  float wavg = 0;
 
   // right to left
   for (int i = 0; i < 8; i++){
     if (sensorValues[i] < minimums[i])
       minimums[i] = sensorValues[i];
 
-    float ratio = (((sensorValues[i] - minimums[i]) * 1000 * weights[i]) / (maximums[i] - minimums[i]));
-    Serial.println(sensorValues[i]);
+    wavg += (((sensorValues[i] - minimums[i]) * 1000 * weights[i]) / (maximums[i] - minimums[i]));
   }
+
+  Serial.println(wavg/8);
 
   digitalWrite(LED_RF, HIGH);
   delay(250);
