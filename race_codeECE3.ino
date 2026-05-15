@@ -99,7 +99,7 @@ double pastError = 0;
 void setup() {
   ECE3_Init();
 
-  // Motor Setup
+  //Motor Setup
   pinMode(left_nslp_pin, OUTPUT);
   pinMode(left_dir_pin, OUTPUT);
   pinMode(left_pwm_pin, OUTPUT);
