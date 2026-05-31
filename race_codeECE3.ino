@@ -19,13 +19,14 @@ const int right_pwm_pin = 39;
 
 
 //PD Constants
-const double kP = 0.08;
-const double kD = 0.25;
-
+const double kP = 0.07;
+const double kD = 1.0;
+const double kI = 0.01;
 
 //Speed Constants
-const int baseSpeed = 150;
+const int baseSpeed = 200;
 double pastError = 0;
+double integralError = 0;
 
 
 void setup() {
@@ -53,6 +54,7 @@ void setup() {
 
 
 void loop() {
+
   ECE3_read_IR(sensorValues);
 
 
@@ -65,24 +67,18 @@ void loop() {
   }
   currentError = currentError / 8.0;
 
+  integralError += currentError;
+  integralError = constrain(integralError, -2000.0, 2000.0);
+
 
   //PD controller
   double derivative = currentError - pastError;
-  double motorControl = (kP * currentError) + (kD * derivative);
+  double motorControl = (kP * currentError) + (kI * integralError) + (kD * derivative);
 
 
   //update motor speeds
   int leftSpd = baseSpeed - motorControl;
   int rightSpd = baseSpeed + motorControl;
-
-
-  //turning
-  if (motorControl < -40) { //turning left
-      leftSpd = leftSpd * 0.7;
-  }
-  else if (motorControl > 40) {//turning right
-      rightSpd = rightSpd * 0.7;
-  }
 
 
   //motor output
