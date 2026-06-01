@@ -20,14 +20,17 @@ const int right_pwm_pin = 39;
 
 //PD Constants
 const double kP = 0.07;
-const double kD = 1.0;
+const double kD = 1.0; //subir tal vez
 const double kI = 0.01;
 
 //Speed Constants
-const int baseSpeed = 200;
+const int baseSpeed = 180;
 double pastError = 0;
 double integralError = 0;
 
+int lineCount = 0;
+bool turned = false;
+bool prevReadBlack = false;
 
 void setup() {
   ECE3_Init();
@@ -52,11 +55,78 @@ void setup() {
   delay(2000);
 }
 
+void turnAround() {
+  //brake
+  // analogWrite(left_pwm_pin, 0);
+  // analogWrite(right_pwm_pin, 0);
+  // delay(400);
+
+  //set motors to spin in opposite directions
+  digitalWrite(left_dir_pin, HIGH);   //left motor backwards
+  digitalWrite(right_dir_pin, LOW);    //right motor forwards
+  
+  analogWrite(left_pwm_pin, 255);
+  analogWrite(right_pwm_pin, 255);
+  delay(200);
+
+  analogWrite(left_pwm_pin, 0);
+  analogWrite(right_pwm_pin, 0);
+  delay(100); //ver si 100 esta bien o subirlo de vuelta a 200
+  //reset motor directions
+  digitalWrite(left_dir_pin, LOW);
+  digitalWrite(right_dir_pin, LOW);
+  analogWrite(left_pwm_pin, 130);
+  analogWrite(right_pwm_pin, 130);
+  delay(200);
+  //clear error to prevent overcorrection
+  pastError = 0;
+  integralError = 0;
+
+  turned = true;
+}
+
+void stopCar() {
+  analogWrite(left_pwm_pin, 0);
+  analogWrite(right_pwm_pin, 0);
+  digitalWrite(left_nslp_pin, LOW); //motors to sleep
+  digitalWrite(right_nslp_pin, LOW);
+  
+  while(true) {
+    delay(1000);
+  }
+}
 
 void loop() {
 
   ECE3_read_IR(sensorValues);
 
+  int blackSensorCount = 0;
+  for (int i = 1; i < 7; i++) {
+    if (sensorValues[i] > 2100) { // Within 200 of max black value
+      blackSensorCount++;
+    }
+  }
+
+  if (blackSensorCount >= 4) {
+    lineCount++;
+    prevReadBlack = true;
+
+    if (lineCount >= 2 && !turned) {
+      turnAround();
+      lineCount = 0;
+    } 
+    else if (lineCount >= 2 && turned) {
+      stopCar();
+    }
+  }
+
+  else{
+    if (prevReadBlack)
+    {
+      prevReadBlack = false;
+      lineCount = 0;
+    }
+  }
 
   //weighted error
   double currentError = 0;
@@ -88,3 +158,4 @@ void loop() {
 
   pastError = currentError;
 }
+
