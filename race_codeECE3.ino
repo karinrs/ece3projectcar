@@ -20,7 +20,7 @@ const int right_pwm_pin = 39;
 
 //PD Constants
 const double kP = 0.07;
-const double kD = 1.0; //subir tal vez
+const double kD = 1.4; //subir tal vez
 const double kI = 0.01;
 
 //Speed Constants
@@ -67,7 +67,7 @@ void turnAround() {
   
   analogWrite(left_pwm_pin, 255);
   analogWrite(right_pwm_pin, 255);
-  delay(200);
+  delay(215);
 
   analogWrite(left_pwm_pin, 0);
   analogWrite(right_pwm_pin, 0);
@@ -102,7 +102,7 @@ void loop() {
 
   int blackSensorCount = 0;
   for (int i = 1; i < 7; i++) {
-    if (sensorValues[i] > 2100) { // Within 200 of max black value
+    if (sensorValues[i] > 2100) {
       blackSensorCount++;
     }
   }
