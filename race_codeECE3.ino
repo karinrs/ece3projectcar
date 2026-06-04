@@ -20,7 +20,7 @@ const int right_pwm_pin = 39;
 
 //PD Constants
 const double kP = 0.07;
-const double kD = 1.4; //subir tal vez
+const double kD = 1.7; //subir tal vez
 const double kI = 0.01;
 
 //Speed Constants
@@ -67,7 +67,7 @@ void turnAround() {
   
   analogWrite(left_pwm_pin, 255);
   analogWrite(right_pwm_pin, 255);
-  delay(215);
+  delay(180);
 
   analogWrite(left_pwm_pin, 0);
   analogWrite(right_pwm_pin, 0);
@@ -77,7 +77,7 @@ void turnAround() {
   digitalWrite(right_dir_pin, LOW);
   analogWrite(left_pwm_pin, 130);
   analogWrite(right_pwm_pin, 130);
-  delay(200);
+  delay(250);
   //clear error to prevent overcorrection
   pastError = 0;
   integralError = 0;
